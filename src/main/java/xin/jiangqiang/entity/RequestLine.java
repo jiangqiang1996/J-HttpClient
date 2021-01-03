@@ -3,6 +3,7 @@ package xin.jiangqiang.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.enums.Constants;
 import xin.jiangqiang.enums.RequestMethod;
 import xin.jiangqiang.utils.RegExpUtil;
@@ -10,6 +11,7 @@ import xin.jiangqiang.utils.RegExpUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author jiangqiang
@@ -21,7 +23,7 @@ import java.util.List;
 public class RequestLine {
     private RequestMethod method = RequestMethod.GET;
     private String url;
-    private String version = "HTTP/1.1";
+    private String version;
 
     public RequestLine(String url) {
         this.url = url;
@@ -29,6 +31,15 @@ public class RequestLine {
 
     public String builder() {
         String tmpUrl = convertUrl(url);
+        if (Objects.isNull(method)) {
+            method = RequestMethod.GET;
+        }
+        if (StringUtils.isEmpty(version)) {
+            version = "HTTP/1.1";
+        }
+        if (StringUtils.isEmpty(url)) {
+            throw new RuntimeException("URL不能为空");
+        }
         return this.method.getName() + Constants.BLANKSPACE.getValue() + tmpUrl + Constants.BLANKSPACE.getValue() + this.version + Constants.CRLF.getValue();
     }
 

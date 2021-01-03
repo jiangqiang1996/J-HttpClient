@@ -1,6 +1,8 @@
 package xin.jiangqiang.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xin.jiangqiang.enums.Constants;
 
@@ -13,9 +15,9 @@ import java.util.Set;
  * @date 2021/1/3 9:40
  */
 @NoArgsConstructor
-@AllArgsConstructor
 public class RequestHeader {
-    Map<String, String> map = new HashMap<>();
+    @Getter
+    private final Map<String, String> map = new HashMap<>();
 
     public String builder() {
         Set<Map.Entry<String, String>> entries = map.entrySet();
@@ -25,5 +27,21 @@ public class RequestHeader {
         }
         stringBuilder.append("Connection:").append(Constants.BLANKSPACE.getValue()).append("close").append(Constants.CRLF.getValue()).append(Constants.CRLF.getValue());
         return stringBuilder.toString();
+    }
+
+    public void putAll(Map<String, String> map) {
+        this.map.putAll(map);
+    }
+
+    public void put(String name, String value) {
+        this.map.put(name, value);
+    }
+
+    public void remove(String name) {
+        this.map.remove(name);
+    }
+
+    public void removeAll() {
+        this.map.clear();
     }
 }
