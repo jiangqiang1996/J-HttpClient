@@ -1,7 +1,7 @@
 package xin.jiangqiang.interceptor;
 
-import xin.jiangqiang.entity.RequestEntity;
-import xin.jiangqiang.entity.ResponseEntity;
+import xin.jiangqiang.entity.request.RequestEntity;
+import xin.jiangqiang.entity.response.ResponseEntity;
 
 /**
  * @author jiangqiang

@@ -1,9 +1,6 @@
-package xin.jiangqiang.entity;
+package xin.jiangqiang.entity.request;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import xin.jiangqiang.enums.RequestMethod;
 
 import java.nio.charset.StandardCharsets;
@@ -13,13 +10,13 @@ import java.util.Map;
  * @author jiangqiang
  * @date 2021/1/3 14:09
  */
-@Data
+@ToString
+@Getter
 @NoArgsConstructor
 public class RequestEntity {
     private final RequestLine requestLine = new RequestLine();
     private final RequestHeader requestHeader = new RequestHeader();
     @Setter
-    @Getter
     RequestBody requestBody = null;
 
     /**

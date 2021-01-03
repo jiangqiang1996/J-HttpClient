@@ -1,10 +1,8 @@
-package xin.jiangqiang.entity;
+package xin.jiangqiang.entity.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import xin.jiangqiang.enums.Constants;
+import xin.jiangqiang.utils.HttpUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +12,14 @@ import java.util.Set;
  * @author jiangqiang
  * @date 2021/1/3 9:40
  */
+@ToString
 @NoArgsConstructor
 public class RequestHeader {
     @Getter
     private final Map<String, String> map = new HashMap<>();
 
     public String builder() {
-        Set<Map.Entry<String, String>> entries = map.entrySet();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, String> entry : entries) {
-            stringBuilder.append(entry.getKey().trim()).append(Constants.COLON.getValue()).append(Constants.BLANKSPACE.getValue()).append(entry.getValue());
-        }
+        StringBuilder stringBuilder = HttpUtils.mapToHttpStringBuilder(map);
         stringBuilder.append("Connection:").append(Constants.BLANKSPACE.getValue()).append("close").append(Constants.CRLF.getValue()).append(Constants.CRLF.getValue());
         return stringBuilder.toString();
     }

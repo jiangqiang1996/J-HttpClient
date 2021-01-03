@@ -6,20 +6,20 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.callback.CallBack;
-import xin.jiangqiang.entity.RequestEntity;
-import xin.jiangqiang.entity.RequestHeader;
-import xin.jiangqiang.entity.RequestLine;
-import xin.jiangqiang.entity.ResponseEntity;
+import xin.jiangqiang.entity.request.RequestEntity;
+import xin.jiangqiang.entity.response.ResponseBody;
+import xin.jiangqiang.entity.response.ResponseEntity;
+import xin.jiangqiang.entity.response.ResponseHeader;
+import xin.jiangqiang.entity.response.ResponseLine;
 import xin.jiangqiang.interceptor.Interceptor;
-import xin.jiangqiang.utils.CommonUtils;
 import xin.jiangqiang.utils.NetUtils;
-import xin.jiangqiang.utils.RegExpUtil;
+import xin.jiangqiang.utils.RegExpUtils;
+import xin.jiangqiang.utils.SocketUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author jiangqiang
@@ -30,6 +30,8 @@ import java.util.Objects;
 public class Sender {
     private String url;
     private Integer port;
+    @Setter
+    @Getter
     private Interceptor interceptor;
     @Setter
     @Getter
@@ -55,7 +57,7 @@ public class Sender {
         if (StringUtils.isEmpty(this.url)) {
             throw new RuntimeException("URL不能为空");
         }
-        if (RegExpUtil.isMatch(url, "^(http|https)(://).*(:)\\d{1,5}(/)")) {
+        if (RegExpUtils.isMatch(url, "^(http|https)(://).*(:)\\d{1,5}(/)")) {
             String[] split = url.split("^(http|https)(://)\\.*(:)\\d{1,5}(/)");
             String[] split1 = split[0].substring(0, split[0].length() - 1).split(":");
             port = Integer.valueOf(split1[split1.length - 1]);
@@ -86,23 +88,6 @@ public class Sender {
         }
     }
 
-    private byte[] getResponse(InputStream inputStream) {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            String str;
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((str = bufferedReader.readLine()) != null) {
-                stringBuilder.append(str);
-                log.debug(str);
-            }
-            return stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            log.info("报文解析异常");
-            throw new RuntimeException("报文解析异常");
-        }
-
-    }
-
     public final byte[] send(String url) {
         this.url = url;
         return this.send();
@@ -116,20 +101,17 @@ public class Sender {
     public final byte[] send() {
         init();
         final Socket socket;
-        final OutputStreamWriter outputStreamWriter;
-        final BufferedWriter bufferedWriter;
         List<String> ips = NetUtils.getIpsByName(url);//获取ip
         try {
             socket = new Socket(ips.get(0), port);
-            outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
-            bufferedWriter = new BufferedWriter(outputStreamWriter);
+
             if (!Objects.isNull(callBack)) {
                 new Thread(() -> {
-                    doReqAndResp(bufferedWriter, outputStreamWriter, socket);
+                    doReqAndResp(socket);
                 }).start();
                 return null;
             } else {
-                return doReqAndResp(bufferedWriter, outputStreamWriter, socket);
+                return doReqAndResp(socket);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -137,25 +119,50 @@ public class Sender {
         }
     }
 
-    private byte[] doReqAndResp(BufferedWriter bufferedWriter, OutputStreamWriter outputStreamWriter, Socket socket) {
-        try {
-            if (this.interceptor != null) {
-                interceptor.beforeRequest(this.requestEntity);
-            }
-            bufferedWriter.write(this.requestEntity.builderToString());
-            bufferedWriter.flush();
-            byte[] response = getResponse(socket.getInputStream());//todo 处理成responseEntity对象
-//            ResponseEntity responseEntity = null;
-//            if (this.interceptor != null) {
-//                interceptor.afterRequest(responseEntity);
-//            }
-            doCallBack(response);
-            return response;
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return null;
-        } finally {
-            CommonUtils.close(bufferedWriter, outputStreamWriter, socket);
+    private byte[] doReqAndResp(Socket socket) {
+        if (this.interceptor != null) {
+            interceptor.beforeRequest(this.requestEntity);
         }
+        //发送报文
+        SocketUtils.writeString(socket, this.requestEntity.builderToString());
+        //读取报文
+        byte[] response = SocketUtils.readToByte(socket);
+        //解析报文
+        ResponseEntity responseEntity = parseResp(response);
+        if (this.interceptor != null) {
+            interceptor.afterRequest(responseEntity);
+        }
+        doCallBack(response);
+        return response;
+    }
+
+    private ResponseEntity parseResp(byte[] response) {
+        String respStr = new String(response, (StandardCharsets.UTF_8));
+        String[] tmpStrs = respStr.split("\r\n");
+        //解析响应行
+        String[] respLines = tmpStrs[0].split(" ");
+        Integer code = Integer.valueOf(respLines[1]);
+        ResponseLine responseLine = new ResponseLine(code, respLines[0], respLines[2]);
+        //解析响应头
+        Map<String, String> headers = new HashMap<>();
+        for (int i = 1; i < tmpStrs.length; i++) {
+            String str = tmpStrs[i];
+            if ("".equals(str)) {
+                break;
+            } else {
+                String[] keyValues = str.split(":");
+                headers.put(keyValues[0], keyValues[1]);
+            }
+        }
+        ResponseHeader responseHeader = new ResponseHeader();
+        responseHeader.putAll(headers);
+        //解析响应体
+        String[] tmpStrings = respStr.split("\r\n\r\n");
+        ResponseBody responseBody = null;
+        if (tmpStrings.length == 2) {
+            byte[] content = tmpStrings[1].getBytes(StandardCharsets.UTF_8);
+            responseBody = new ResponseBody(content);
+        }
+        return new ResponseEntity(responseLine, responseHeader, responseBody, response);
     }
 }
