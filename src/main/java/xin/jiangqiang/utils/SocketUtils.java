@@ -1,7 +1,7 @@
 package xin.jiangqiang.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import xin.jiangqiang.enums.Constants;
+import xin.jiangqiang.constants.CommonConstants;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,11 +22,12 @@ public class SocketUtils {
         try {
             InputStreamReader reader = new InputStreamReader(socket.getInputStream());
             BufferedReader br = new BufferedReader(reader);
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
                 // 一次读一行
-                stringBuilder.append(line).append(Constants.CRLF.getValue());
+                stringBuilder.append(line).append(CommonConstants.CRLF);
             }
+            log.debug("响应报文：\n{}", stringBuilder.toString());
             return stringBuilder.toString();
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -48,6 +49,7 @@ public class SocketUtils {
 
     public static void writeString(Socket socket, String data) {
         try {
+            log.debug("请求报文：\n{}", data);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
             bufferedWriter.write(data);

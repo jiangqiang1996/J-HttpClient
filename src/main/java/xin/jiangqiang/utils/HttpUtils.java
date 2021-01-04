@@ -1,6 +1,6 @@
 package xin.jiangqiang.utils;
 
-import xin.jiangqiang.enums.Constants;
+import xin.jiangqiang.constants.CommonConstants;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +14,9 @@ public class HttpUtils {
         Set<Map.Entry<String, String>> entries = map.entrySet();
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, String> entry : entries) {
-            stringBuilder.append(entry.getKey().trim()).append(Constants.COLON.getValue()).append(Constants.BLANKSPACE.getValue()).append(entry.getValue());
+            String value = entry.getValue();
+            stringBuilder.append(entry.getKey().trim()).append(CommonConstants.COLON)
+                    .append(CommonConstants.BLANKSPACE).append(value).append(CommonConstants.CRLF);
         }
         return stringBuilder;
     }

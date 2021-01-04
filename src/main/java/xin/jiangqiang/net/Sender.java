@@ -35,7 +35,7 @@ public class Sender {
     private Interceptor interceptor;
     @Setter
     @Getter
-    private CallBack<byte[]> callBack;
+    private CallBack<ResponseEntity> callBack;
     @Getter
     @Setter
     RequestEntity requestEntity;
@@ -44,7 +44,7 @@ public class Sender {
         this.url = url;
     }
 
-    public Sender(String url, CallBack<byte[]> callBack) {
+    public Sender(String url, CallBack<ResponseEntity> callBack) {
         this.url = url;
         this.callBack = callBack;
     }
@@ -69,7 +69,7 @@ public class Sender {
             }
         }
         if (Objects.isNull(requestEntity)) {
-            requestEntity = new RequestEntity().setUrl(url);
+            requestEntity = new RequestEntity(null).setUrl(url);
         } else {
             //请求实体需要设置url
             requestEntity.setUrl(url);
@@ -80,15 +80,15 @@ public class Sender {
     /**
      * 回调函数不为空才执行
      *
-     * @param bytes todo 后期修改为ResponseEntity对象
+     * @param responseEntity
      */
-    private void doCallBack(byte[] bytes) {
+    private void doCallBack(ResponseEntity responseEntity) {
         if (!Objects.isNull(callBack)) {
-            callBack.process(bytes);
+            callBack.process(responseEntity);
         }
     }
 
-    public final byte[] send(String url) {
+    public final ResponseEntity send(String url) {
         this.url = url;
         return this.send();
     }
@@ -96,9 +96,9 @@ public class Sender {
     /**
      * 如果回调函数对象不为空,则使用异步
      *
-     * @return 异步或报错返回null, 同步返回字节数组 todo 后期优化为response对象,包含响应码等属性
+     * @return 异步或报错返回null, 同步返回字节数组
      */
-    public final byte[] send() {
+    public final ResponseEntity send() {
         init();
         final Socket socket;
         List<String> ips = NetUtils.getIpsByName(url);//获取ip
@@ -119,7 +119,7 @@ public class Sender {
         }
     }
 
-    private byte[] doReqAndResp(Socket socket) {
+    private ResponseEntity doReqAndResp(Socket socket) {
         if (this.interceptor != null) {
             interceptor.beforeRequest(this.requestEntity);
         }
@@ -132,8 +132,8 @@ public class Sender {
         if (this.interceptor != null) {
             interceptor.afterRequest(responseEntity);
         }
-        doCallBack(response);
-        return response;
+        doCallBack(responseEntity);
+        return responseEntity;
     }
 
     private ResponseEntity parseResp(byte[] response) {

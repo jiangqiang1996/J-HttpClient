@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import xin.jiangqiang.enums.Constants;
+import xin.jiangqiang.constants.CommonConstants;
+import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.enums.RequestMethod;
 import xin.jiangqiang.utils.RegExpUtils;
 
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author jiangqiang
@@ -24,7 +26,7 @@ public class RequestLine {
 
     {
         this.method = RequestMethod.GET;
-        version = "HTTP/1.1";
+        this.version = HttpHeaderValue.VERSION;
     }
 
     public RequestLine(String url) {
@@ -36,20 +38,30 @@ public class RequestLine {
         if (StringUtils.isEmpty(url)) {
             throw new RuntimeException("URL不能为空");
         }
-        return this.method.getName() + Constants.BLANKSPACE.getValue() + tmpUrl + Constants.BLANKSPACE.getValue() + this.version + Constants.CRLF.getValue();
+        return this.method.getName() + CommonConstants.BLANKSPACE + tmpUrl + CommonConstants.BLANKSPACE + this.version + CommonConstants.CRLF;
     }
 
-    private static String convertUrl(String str) {
-        String tmpStr = "/";
-        if (RegExpUtils.isMatch(str, "^(http|https)(://).*(/)")) {
-            String[] split = str.split("^(http|https)(://)\\.*(/)");
-            int length = split[0].length();
-            String substring = str.substring(length);
-            if (substring.length() != 0) {
-                tmpStr = str.substring(length);
+    /**
+     * 去掉URL的协议和域名部分
+     *
+     * @param url
+     * @return
+     */
+    private static String convertUrl(String url) {
+        if (RegExpUtils.isMatch(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*.*")) {
+            Pattern r = Pattern.compile("^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*");
+            // 现在创建 matcher 对象
+            Matcher matcher = r.matcher(url);
+            if (matcher.find()) {
+                String group = matcher.group();
+                String substring = url.substring(group.length());
+                return StringUtils.isEmpty(substring) ? "/" : substring;
+            } else {
+                throw new RuntimeException("URL无效");
             }
+        } else {
+            throw new RuntimeException("URL无效");
         }
-        return tmpStr;
     }
 
 }

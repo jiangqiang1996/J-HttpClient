@@ -1,16 +1,9 @@
 package xin.jiangqiang.entity.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.ToString;
-import xin.jiangqiang.enums.Constants;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author jiangqiang

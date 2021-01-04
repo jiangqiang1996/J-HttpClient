@@ -45,7 +45,7 @@
         </encoder>
     </appender>
 
-    <logger name="xin.jiangqiang" level="INFO" additivity="false">
+    <logger name="xin.jiangqiang" level="DEBUG" additivity="false">
         <appender-ref ref="console"/>
 <!--        <appender-ref ref="file"/>-->
     </logger>

@@ -2,11 +2,11 @@ package xin.jiangqiang.entity.response;
 
 import lombok.Getter;
 import lombok.ToString;
-import xin.jiangqiang.enums.Constants;
+import xin.jiangqiang.constants.CommonConstants;
+import xin.jiangqiang.utils.HttpUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author jiangqiang
@@ -18,12 +18,8 @@ public class ResponseHeader {
     private final Map<String, String> map = new HashMap<>();
 
     public String builder() {
-        Set<Map.Entry<String, String>> entries = map.entrySet();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, String> entry : entries) {
-            stringBuilder.append(entry.getKey().trim()).append(Constants.COLON.getValue()).append(Constants.BLANKSPACE.getValue()).append(entry.getValue());
-        }
-        stringBuilder.append("Connection:").append(Constants.BLANKSPACE.getValue()).append("close").append(Constants.CRLF.getValue()).append(Constants.CRLF.getValue());
+        StringBuilder stringBuilder = HttpUtils.mapToHttpStringBuilder(map);
+        stringBuilder.append(CommonConstants.CRLF);
         return stringBuilder.toString();
     }
 

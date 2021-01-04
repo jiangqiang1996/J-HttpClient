@@ -1,6 +1,13 @@
 package xin.jiangqiang.entity.request;
 
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
+import xin.jiangqiang.constants.HttpHeaderValue;
+import xin.jiangqiang.constants.HttpRequestHeaderType;
+import xin.jiangqiang.entity.request.body.RequestBody;
+import xin.jiangqiang.entity.request.body.impl.RequestFormBody;
+import xin.jiangqiang.entity.request.body.impl.RequestFormDataBody;
+import xin.jiangqiang.entity.request.body.impl.RequestJSONBody;
 import xin.jiangqiang.enums.RequestMethod;
 
 import java.nio.charset.StandardCharsets;
@@ -12,12 +19,10 @@ import java.util.Map;
  */
 @ToString
 @Getter
-@NoArgsConstructor
 public class RequestEntity {
     private final RequestLine requestLine = new RequestLine();
     private final RequestHeader requestHeader = new RequestHeader();
-    @Setter
-    RequestBody requestBody = null;
+    private final RequestBody requestBody;
 
     /**
      * 设置请求参数
@@ -25,31 +30,51 @@ public class RequestEntity {
      * @param requestBody 请求体
      */
     public RequestEntity(RequestBody requestBody) {
+
+        if (requestBody instanceof RequestFormBody) {
+            addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_X_WWW_FORM_URLENCODED);
+        } else if (requestBody instanceof RequestJSONBody) {
+            addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_JSON);
+        } else if (requestBody instanceof RequestFormDataBody) {
+            addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_FORM_DATA);
+        } else {
+            addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_X_WWW_FORM_URLENCODED);//默认就表单类型
+        }
         this.requestBody = requestBody;
     }
 
+    /**
+     * 拼接报文字符串
+     *
+     * @return 返回报文字符串
+     */
     public String builderToString() {
-        String requestStr = requestLine.builder() + requestHeader.builder();
+        String requestStr;
+        String bodyStr = null;
         if (requestBody != null) {
-            requestStr += requestBody.builder();
+            bodyStr = requestBody.builder(requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE));
+            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length));
+        } else {
+            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, "0");
+        }
+        requestStr = requestLine.builder() + requestHeader.builder();
+        if (StringUtils.isNotEmpty(bodyStr)) {
+            requestStr += bodyStr;
         }
         return requestStr;
     }
 
     public byte[] builderToByte() {
-        String requestStr = requestLine.builder() + requestHeader.builder();
-        if (requestBody != null) {
-            requestStr += requestBody.builder();
-        }
-        return requestStr.getBytes(StandardCharsets.ISO_8859_1);
+        return builderToString().getBytes(StandardCharsets.ISO_8859_1);
     }
 
     public RequestEntity setUrl(String url) {
+        requestHeader.setHost(url);
         requestLine.setUrl(url);
         return this;
     }
 
-    public RequestEntity setUrl(RequestMethod method) {
+    public RequestEntity setMethod(RequestMethod method) {
         requestLine.setMethod(method);
         return this;
     }
@@ -79,24 +104,12 @@ public class RequestEntity {
         return this;
     }
 
-
-    public RequestEntity addParam(String name, String value) {
-        this.requestBody.put(name, value);
-        return this;
+    public String getHeader(String name) {
+        return this.requestHeader.getHeader(name);
     }
 
-    public RequestEntity addParams(Map<String, String> headers) {
-        this.requestBody.putAll(headers);
-        return this;
+    public Map<String, String> getHeaders() {
+        return this.requestHeader.getHeaders();
     }
 
-    public RequestEntity removeParam(String name) {
-        this.requestBody.remove(name);
-        return this;
-    }
-
-    public RequestEntity removeAllParam() {
-        this.requestBody.removeAll();
-        return this;
-    }
 }

@@ -3,11 +3,7 @@ package xin.jiangqiang.entity.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
-import xin.jiangqiang.enums.Constants;
-import xin.jiangqiang.enums.RequestMethod;
-
-import java.util.Objects;
+import xin.jiangqiang.constants.CommonConstants;
 
 /**
  * @author jiangqiang
@@ -22,6 +18,6 @@ public class ResponseLine {
     final private String desc;
 
     public String builder() {
-        return this.version + Constants.BLANKSPACE.getValue() + this.responseCode + Constants.BLANKSPACE.getValue() + this.desc + Constants.CRLF.getValue();
+        return this.version + CommonConstants.BLANKSPACE + this.responseCode + CommonConstants.BLANKSPACE + this.desc + CommonConstants.CRLF;
     }
 }

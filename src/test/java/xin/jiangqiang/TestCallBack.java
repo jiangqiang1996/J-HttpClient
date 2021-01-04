@@ -6,18 +6,16 @@ import xin.jiangqiang.entity.response.ResponseEntity;
 import xin.jiangqiang.interceptor.AbstractInterceptor;
 import xin.jiangqiang.net.Sender;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * @author jiangqiang
  * @date 2021/1/3 12:49
  */
-public class TestCallBack implements CallBack<byte[]> {
+public class TestCallBack implements CallBack<ResponseEntity> {
     public static void main(String[] args) {
         String url = "http://www.baidu.com/";
         Sender sender = new Sender();
         sender.setCallBack(new TestCallBack());
-        RequestEntity requestEntity = new RequestEntity();
+        RequestEntity requestEntity = new RequestEntity(null);
         sender.setRequestEntity(requestEntity);
         System.out.println(1);
         sender.setInterceptor(new AbstractInterceptor() {
@@ -35,17 +33,17 @@ public class TestCallBack implements CallBack<byte[]> {
                 System.out.println(3);
             }
         });
-        byte[] bytes = sender.send(url);
+        ResponseEntity responseEntity = sender.send(url);
         System.out.println(4);
-        if (bytes != null) {//异步请求时数组为null
-//            System.out.println(new String(bytes, StandardCharsets.UTF_8));
+        if (responseEntity != null) {//异步请求时为null
+            System.out.println(responseEntity);
             System.out.println(5);
         }
     }
 
     @Override
-    public void process(byte[] bytes) {
-//        System.out.println(new String(bytes, StandardCharsets.UTF_8));
+    public void process(ResponseEntity responseEntity) {
+        System.out.println(responseEntity);
         System.out.println(6);
     }
 }
