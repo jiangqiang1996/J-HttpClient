@@ -145,16 +145,25 @@ public class Sender {
         ResponseLine responseLine = new ResponseLine(code, respLines[0], respLines[2]);
         //解析响应头
         Map<String, String> headers = new HashMap<>();
+        List<String> cookieStrings = new ArrayList<>();
         for (int i = 1; i < tmpStrs.length; i++) {
             String str = tmpStrs[i];
             if ("".equals(str)) {
                 break;
             } else {
                 String[] keyValues = str.split(":");
-                headers.put(keyValues[0], keyValues[1]);
+                String key = keyValues[0];
+                String value = str.substring(keyValues[0].length() + 1).trim();//值可能也包含冒号
+                System.out.println(value);
+                if ("Set-Cookie".equals(key)) {
+                    cookieStrings.add(value);
+                } else {
+                    headers.put(key, value);
+                }
             }
         }
         ResponseHeader responseHeader = new ResponseHeader();
+        responseHeader.addAllCookies(cookieStrings);
         responseHeader.putAll(headers);
         //解析响应体
         String[] tmpStrings = respStr.split("\r\n\r\n");

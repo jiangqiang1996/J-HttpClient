@@ -36,14 +36,16 @@ public class TestCallBack implements CallBack<ResponseEntity> {
         ResponseEntity responseEntity = sender.send(url);
         System.out.println(4);
         if (responseEntity != null) {//异步请求时为null
-            System.out.println(responseEntity);
+//            System.out.println(responseEntity);
             System.out.println(5);
         }
     }
 
     @Override
     public void process(ResponseEntity responseEntity) {
-        System.out.println(responseEntity);
+//        System.out.println(responseEntity);
         System.out.println(6);
+        System.out.println(responseEntity.getResponseHeader().builder());
+        System.out.println(responseEntity.getResponseHeader().getCookies());
     }
 }

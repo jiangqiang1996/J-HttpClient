@@ -3,6 +3,10 @@ package xin.jiangqiang.entity.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import xin.jiangqiang.entity.common.Cookie;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author jiangqiang
@@ -22,4 +26,31 @@ public class ResponseEntity {
         return requestStr;
     }
 
+    public Integer getResponseCode() {
+        return responseLine.getResponseCode();
+    }
+
+    public String getVersion() {
+        return responseLine.getVersion();
+    }
+
+    public String getDesc() {
+        return responseLine.getDesc();
+    }
+
+    public List<Cookie> getCookies() {
+        return responseHeader.getCookies();
+    }
+
+    public Cookie getCookie(String name) {
+        return responseHeader.getCookie(name);
+    }
+
+    public Map<String, String> getHeaders() {
+        return responseHeader.getHeaders();
+    }
+
+    public String getHeader(String name) {
+        return responseHeader.getHeader(name);
+    }
 }
