@@ -3,6 +3,7 @@ package xin.jiangqiang.entity.request.body.impl;
 import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.ToString;
+import xin.jiangqiang.constants.CommonConstants;
 import xin.jiangqiang.entity.request.body.RequestBody;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class RequestJSONBody implements RequestBody {
 
     @Override
     public String builder(String contentType) {
-        return JSON.toJSONString(map);
+        return JSON.toJSONString(map) + CommonConstants.CRLF;
     }
 
     public RequestJSONBody addAllParams(Map<String, String> params) {

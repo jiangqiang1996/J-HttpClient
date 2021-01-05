@@ -17,7 +17,6 @@ import java.util.Map;
  */
 @ToString
 public class ResponseHeader {
-    @Getter
     private final Map<String, String> map = new HashMap<>();//不存储cookie
     private final List<Cookie> cookies = new ArrayList<>();
     private final List<String> cookieStrings = new ArrayList<>();//存储cookie字符串

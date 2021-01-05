@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import xin.jiangqiang.constants.CommonConstants;
 import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.entity.request.body.RequestBody;
 import xin.jiangqiang.utils.HttpUtils;
@@ -27,7 +28,7 @@ public class RequestBodyDefault implements RequestBody {
             StringBuilder stringBuilder = HttpUtils.mapToHttpStringBuilder(map);
             return stringBuilder.toString();
         } else if (contentType.equals(HttpHeaderValue.CONTENTTYPE_JSON)) {//json提交
-            return JSON.toJSONString(map);
+            return JSON.toJSONString(map) + CommonConstants.CRLF;
         } else {
             throw new RuntimeException("该类型不支持此请求体对象");
         }

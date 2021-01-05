@@ -154,7 +154,6 @@ public class Sender {
                 String[] keyValues = str.split(":");
                 String key = keyValues[0];
                 String value = str.substring(keyValues[0].length() + 1).trim();//值可能也包含冒号
-                System.out.println(value);
                 if ("Set-Cookie".equals(key)) {
                     cookieStrings.add(value);
                 } else {
@@ -168,9 +167,12 @@ public class Sender {
         //解析响应体
         String[] tmpStrings = respStr.split("\r\n\r\n");
         ResponseBody responseBody = null;
-        if (tmpStrings.length == 2) {
-            byte[] content = tmpStrings[1].getBytes(StandardCharsets.UTF_8);
+        if (tmpStrings.length >= 2) {
+            String body = respStr.substring(tmpStrings[0].length() + 4);//响应正文
+            byte[] content = body.getBytes(StandardCharsets.UTF_8);
             responseBody = new ResponseBody(content);
+        } else {
+            responseBody = new ResponseBody(new byte[0]);
         }
         return new ResponseEntity(responseLine, responseHeader, responseBody, response);
     }

@@ -4,14 +4,16 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.constants.HttpRequestHeaderType;
+import xin.jiangqiang.entity.common.Cookie;
 import xin.jiangqiang.entity.request.body.RequestBody;
 import xin.jiangqiang.entity.request.body.impl.RequestFormBody;
 import xin.jiangqiang.entity.request.body.impl.RequestFormDataBody;
 import xin.jiangqiang.entity.request.body.impl.RequestJSONBody;
+import xin.jiangqiang.enums.HttpStructure;
 import xin.jiangqiang.enums.RequestMethod;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author jiangqiang
@@ -45,6 +47,7 @@ public class RequestEntity {
 
     /**
      * 拼接报文字符串
+     * 返回规范的请求报文信息
      *
      * @return 返回报文字符串
      */
@@ -62,6 +65,35 @@ public class RequestEntity {
             requestStr += bodyStr;
         }
         return requestStr;
+    }
+
+    /**
+     * 不传参数则返回全部
+     * 根据选项返回指定部分报文
+     *
+     * @return
+     */
+    public String formatToString(HttpStructure... httpStructures) {
+        List<HttpStructure> httpStructures1 = new ArrayList<>(3);
+        Collections.addAll(httpStructures1, httpStructures);
+        if (httpStructures1.size() == 0) {
+            httpStructures1.add(HttpStructure.LINE);
+            httpStructures1.add(HttpStructure.HEAD);
+            httpStructures1.add(HttpStructure.BODY);
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        if (httpStructures1.contains(HttpStructure.LINE)) {
+            stringBuilder.append(requestLine.builder());
+        }
+        if (httpStructures1.contains(HttpStructure.HEAD)) {
+            stringBuilder.append(requestHeader.builder());
+        }
+        if (httpStructures1.contains(HttpStructure.BODY)) {
+            if (requestBody != null) {
+                stringBuilder.append(requestBody.builder(requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE)));
+            }
+        }
+        return stringBuilder.toString();
     }
 
     public byte[] builderToByte() {
@@ -112,4 +144,13 @@ public class RequestEntity {
         return this.requestHeader.getHeaders();
     }
 
+    public RequestEntity addCookie(Cookie cookie) {
+        requestHeader.addCookie(cookie);
+        return this;
+    }
+
+    public RequestEntity addCookies(List<Cookie> cookies) {
+        requestHeader.addCookies(cookies);
+        return this;
+    }
 }

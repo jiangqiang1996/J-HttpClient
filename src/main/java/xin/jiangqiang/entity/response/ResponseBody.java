@@ -2,6 +2,7 @@ package xin.jiangqiang.entity.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import xin.jiangqiang.constants.CommonConstants;
 
 import java.nio.charset.StandardCharsets;
 
@@ -15,7 +16,7 @@ public class ResponseBody {
     private final byte[] content;//响应正文对应的字节数组
 
     public String builder() {
-        return new String(content, StandardCharsets.UTF_8);
+        return new String(content, StandardCharsets.UTF_8) + CommonConstants.CRLF;
     }
 
     @Override

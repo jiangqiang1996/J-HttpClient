@@ -1,9 +1,13 @@
 package xin.jiangqiang.entity.common;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
 
 /**
  * cookie的各项属性建立之后就不能修改
@@ -15,7 +19,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ToString
 @EqualsAndHashCode
-public class Cookie {
+public class Cookie implements Serializable {
+    @Getter(AccessLevel.NONE)
+    private static final long serialVersionUID = 1L;
     private final String name;
     private final String value;
     private final String domain;
@@ -26,7 +32,7 @@ public class Cookie {
     private final String comment;
     private final Integer version;
 
-    public Cookie(String name, String value, String domain, String path, String expires, Long maxAge, boolean secure, String comment, Integer version) {
+    private Cookie(String name, String value, String domain, String path, String expires, Long maxAge, boolean secure, String comment, Integer version) {
         this.name = name;
         this.value = value;
         this.domain = domain;
@@ -45,6 +51,7 @@ public class Cookie {
      * @return
      */
     public static Cookie getInstance(String str) {
+        str = str.trim();
         String[] splits = str.split(";");
         String name = "";
         String value = "";
@@ -56,39 +63,40 @@ public class Cookie {
         String comment = "";
         int version = 0;
         for (int i = 0; i < splits.length; i++) {
-            String string = splits[i].trim();
-            String[] tmpArray = string.split("=");
-            String tmpKey = tmpArray[0];//等号左边
-            String tmpVal = null;
-            if (tmpArray[0].length() < string.trim().length()) {
-                tmpVal = string.substring(tmpArray[0].length() + 1).trim();//等号右边
-            }
-            if (i == 0) {
-                name = tmpKey;
-                value = tmpVal;
-            } else {
-                if (tmpKey.equals("max-age")) {
-                    maxAge = Long.parseLong(tmpVal);
-                } else if (tmpKey.equals("expires")) {
-                    expires = tmpVal;
-                } else if (tmpKey.equals("domain")) {
-                    domain = tmpVal;
-                } else if (tmpKey.equals("path")) {
-                    path = tmpVal;
-                } else if (tmpKey.equals("version")) {
-                    version = Integer.parseInt(tmpVal);
-                } else if (tmpKey.equals("secure")) {
-                    if (tmpVal != null) {
-                        secure = Boolean.parseBoolean(tmpVal);
-                    } else {
-                        secure = true;
+            if (StringUtils.isNotEmpty(splits[i].trim())) {
+                String string = splits[i].trim();
+                String[] tmpArray = string.split("=");
+                String tmpKey = tmpArray[0];//等号左边
+                String tmpVal = null;
+                if (tmpArray[0].length() < string.trim().length()) {
+                    tmpVal = string.substring(tmpArray[0].length() + 1).trim();//等号右边
+                }
+                if (i == 0) {
+                    name = tmpKey;
+                    value = tmpVal;
+                } else {
+                    if (tmpKey.equals("max-age")) {
+                        maxAge = Long.parseLong(tmpVal);
+                    } else if (tmpKey.equals("expires")) {
+                        expires = tmpVal;
+                    } else if (tmpKey.equals("domain")) {
+                        domain = tmpVal;
+                    } else if (tmpKey.equals("path")) {
+                        path = tmpVal;
+                    } else if (tmpKey.equals("version")) {
+                        version = Integer.parseInt(tmpVal);
+                    } else if (tmpKey.equals("secure")) {
+                        if (tmpVal != null) {
+                            secure = Boolean.parseBoolean(tmpVal);
+                        } else {
+                            secure = true;
+                        }
+                    } else if (tmpKey.equals("comment")) {
+                        comment = tmpVal;
                     }
-                } else if (tmpKey.equals("comment")) {
-                    comment = tmpVal;
                 }
             }
         }
         return new Cookie(name, value, domain, path, expires, maxAge, secure, comment, version);
     }
-
 }
