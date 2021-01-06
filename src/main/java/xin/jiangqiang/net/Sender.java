@@ -57,10 +57,20 @@ public class Sender {
         if (StringUtils.isEmpty(this.url)) {
             throw new RuntimeException("URL不能为空");
         }
-        if (RegExpUtils.isMatch(url, "^(http|https)(://).*(:)\\d{1,5}(/)")) {
-            String[] split = url.split("^(http|https)(://)\\.*(:)\\d{1,5}(/)");
-            String[] split1 = split[0].substring(0, split[0].length() - 1).split(":");
-            port = Integer.valueOf(split1[split1.length - 1]);
+        //匹配带端口号的链接^(http|https)(://).*(:)\d{1,5}(/)
+        String regex = "^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*(:)\\d{1,5}(/.*)*";
+        if (RegExpUtils.isMatch(url, regex)) {
+            String tmpStr = null;
+            if (url.startsWith("https://")) {
+                tmpStr = url.substring(NetUtils.getHost(url).length() + 8 + 1);//需要加一个冒号的长度
+            } else if (url.startsWith("http://")) {
+                tmpStr = url.substring(NetUtils.getHost(url).length() + 7 + 1);
+            }
+            if (StringUtils.isEmpty(tmpStr)) {
+                throw new RuntimeException("URL不合法");
+            }
+            String[] split = tmpStr.split("/");
+            port = Integer.valueOf(split[0]);
         } else {
             if (url.startsWith("https")) {
                 this.port = 443;
@@ -141,8 +151,12 @@ public class Sender {
         String[] tmpStrs = respStr.split("\r\n");
         //解析响应行
         String[] respLines = tmpStrs[0].split(" ");
+        String desc = null;//有可能没有desc部分
+        if (respLines.length < 3) {
+            desc = "";
+        }
         Integer code = Integer.valueOf(respLines[1]);
-        ResponseLine responseLine = new ResponseLine(code, respLines[0], respLines[2]);
+        ResponseLine responseLine = new ResponseLine(code, respLines[0], desc);
         //解析响应头
         Map<String, String> headers = new HashMap<>();
         List<String> cookieStrings = new ArrayList<>();

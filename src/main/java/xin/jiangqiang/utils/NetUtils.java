@@ -36,13 +36,16 @@ public class NetUtils {
         return ipList;
     }
 
+    /**
+     * 获取域名部分
+     *
+     * @param url
+     * @return
+     */
     public static String getHost(String url) {
         if (RegExpUtils.isMatch(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*.*")) {
-            Pattern r = Pattern.compile("^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*");
-            // 现在创建 matcher 对象
-            Matcher matcher = r.matcher(url);
-            if (matcher.find()) {
-                String group = matcher.group();
+            String group = RegExpUtils.findMatchString(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*");
+            if (StringUtils.isNotEmpty(group)) {
                 String host = null;
                 if (group.startsWith("https://")) {
                     host = group.substring(8);
@@ -54,4 +57,5 @@ public class NetUtils {
         }
         throw new RuntimeException("URL无效");
     }
+
 }
