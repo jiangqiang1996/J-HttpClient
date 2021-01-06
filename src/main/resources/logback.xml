@@ -12,6 +12,8 @@
     <!-- 定义日志文件 输出位置 -->
     <property name="log_dir" value="/logs"/>
     <!-- <property name="log_dir" value="/home/data/logs/src" /> -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger:%L) | %msg%n"></property><!--%F 类名-->
     <!-- 日志最大的历史 30天 -->
     <property name="maxHistory" value="30"/>
     <!-- ConsoleAppender 控制台输出日志 -->
@@ -19,7 +21,8 @@
         <encoder>
             <pattern>
                 <!-- 设置日志输出格式 -->
-                [%d{yyyy-MM-dd HH:mm:ss.SSS}][%logger:%line]%-5level -- %msg%n
+                <!--                [%d{yyyy-MM-dd HH:mm:ss.SSS}][%logger:%line]%-5level &#45;&#45; %msg%n-->
+                ${CONSOLE_LOG_PATTERN}
             </pattern>
         </encoder>
     </appender>
@@ -47,7 +50,7 @@
 
     <logger name="xin.jiangqiang" level="INFO" additivity="false">
         <appender-ref ref="console"/>
-<!--        <appender-ref ref="file"/>-->
+        <!--        <appender-ref ref="file"/>-->
     </logger>
     <root>
         <!-- 打印TRACE级别日志及以上级别日志 -->
@@ -55,6 +58,6 @@
         <!-- 控制台输出 -->
         <appender-ref ref="console"/>
         <!-- 文件输出 -->
-<!--        <appender-ref ref="file"/>-->
+        <!--        <appender-ref ref="file"/>-->
     </root>
 </configuration>
