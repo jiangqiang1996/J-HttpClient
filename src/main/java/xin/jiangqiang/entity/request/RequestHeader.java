@@ -7,14 +7,12 @@ import xin.jiangqiang.constants.HttpRequestHeaderType;
 import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.entity.common.Cookie;
 import xin.jiangqiang.utils.HttpUtils;
-import xin.jiangqiang.utils.RegExpUtils;
+import xin.jiangqiang.utils.NetUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author jiangqiang
@@ -89,25 +87,7 @@ public class RequestHeader {
     }
 
     public void setHost(String url) {
-        if (RegExpUtils.isMatch(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*.*")) {
-            Pattern r = Pattern.compile("^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*");
-            // 现在创建 matcher 对象
-            Matcher matcher = r.matcher(url);
-            if (matcher.find()) {
-                String group = matcher.group();
-                String host = null;
-                if (group.startsWith("https://")) {
-                    host = group.substring(8);
-                } else if (group.startsWith("http")) {
-                    host = group.substring(7);
-                }
-                this.map.put(HttpRequestHeaderType.HOST, host);
-            } else {
-                throw new RuntimeException("URL无效");
-            }
-        } else {
-            throw new RuntimeException("URL无效");
-        }
+        this.map.put(HttpRequestHeaderType.HOST, NetUtils.getHost(url));
     }
 
 }
