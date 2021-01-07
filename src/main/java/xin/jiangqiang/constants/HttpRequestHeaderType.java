@@ -17,8 +17,8 @@ public final class HttpRequestHeaderType {
     public final static String AUTHORIZATION = "Authorization";
     public final static String CACHE_CONTROL = "Cache-Control";
     public final static String CONNECTION = "Connection";
-    public final static String CONTENT_LENGTH = "Content_Length";
-    public final static String CONTENT_TYPE = "Content_Type";
+    public final static String CONTENT_LENGTH = "Content-Length";
+    public final static String CONTENT_TYPE = "Content-Type";
     public final static String COOKIE = "Cookie";
     public final static String DATE = "Date";
     public final static String EXPECT = "Expect";
@@ -36,7 +36,7 @@ public final class HttpRequestHeaderType {
     public final static String REFERER = "Referer";
     public final static String TE = "TE";
     public final static String UPGRADE = "Upgrade";
-    public final static String USER_AGENT = "User_Agent";
+    public final static String USER_AGENT = "User-Agent";
     public final static String VIA = "Via";
     public final static String WARNING = "Warning";
 
