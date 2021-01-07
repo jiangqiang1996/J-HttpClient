@@ -31,7 +31,7 @@ public class SocketUtils {
             return stringBuilder.toString();
         } catch (IOException e) {
             log.error(e.getMessage());
-            return "";
+            throw new RuntimeException(e);//读取数据超时
         } finally {
             if (!socket.isInputShutdown()) {
                 try {
@@ -50,12 +50,14 @@ public class SocketUtils {
     public static void writeString(Socket socket, String data) {
         try {
             log.debug("请求报文：\n{}", data);
+            System.out.println(data);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
             bufferedWriter.write(data);
             bufferedWriter.flush();
         } catch (IOException e) {
             log.error(e.getMessage());
+            throw new RuntimeException(e);//socket write error 建立连接之后，很久没有传输数据
         } finally {
             if (!socket.isOutputShutdown()) {
                 try {

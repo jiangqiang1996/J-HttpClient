@@ -150,12 +150,13 @@ public class Sender {
         String respStr = new String(response, (StandardCharsets.UTF_8));
         String[] tmpStrs = respStr.split("\r\n");
         //解析响应行
-        String[] respLines = tmpStrs[0].split(" ");
+        String responseLineStr = tmpStrs[0];
+        String[] respLines = responseLineStr.split(" ");
         String desc = null;//有可能没有desc部分
         if (respLines.length < 3) {
             desc = "";
         }
-        Integer code = Integer.valueOf(respLines[1]);
+        Integer code = Integer.valueOf(respLines[1]);//断点太久会爆越界异常
         ResponseLine responseLine = new ResponseLine(code, respLines[0], desc);
         //解析响应头
         Map<String, String> headers = new HashMap<>();

@@ -26,7 +26,6 @@ public class RequestHeader {
 
     {
         put(HttpRequestHeaderType.USER_AGENT, CommonConstants.PROJECT_VERSION);
-        put(HttpRequestHeaderType.CONNECTION, HttpHeaderValue.CLOSE);
         put(HttpRequestHeaderType.ACCEPT, "*/*");
     }
 
@@ -87,7 +86,7 @@ public class RequestHeader {
     }
 
     public void setHost(String url) {
-        this.map.put(HttpRequestHeaderType.HOST, NetUtils.getHost(url));
+        this.map.put(HttpRequestHeaderType.HOST, NetUtils.getHostContainPort(url));
     }
 
 }

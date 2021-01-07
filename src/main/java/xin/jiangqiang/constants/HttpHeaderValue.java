@@ -15,6 +15,7 @@ public final class HttpHeaderValue {
 
     public final static String CONTENTTYPE_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     public final static String CONTENTTYPE_FORM_DATA = "multipart/form-data";
+    public final static String KEEP_ALIVE = "keep-alive";
 
     private HttpHeaderValue() {
     }

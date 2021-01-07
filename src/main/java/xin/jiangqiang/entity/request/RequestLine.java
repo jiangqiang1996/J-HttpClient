@@ -7,10 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.constants.CommonConstants;
 import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.enums.RequestMethod;
-import xin.jiangqiang.utils.RegExpUtils;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import xin.jiangqiang.utils.NetUtils;
 
 /**
  * @author jiangqiang
@@ -21,7 +18,7 @@ import java.util.regex.Pattern;
 @Data
 public class RequestLine {
     private RequestMethod method = RequestMethod.GET;
-    private String url;
+    private String url;//完整URL，build时创建请求所需部分
     private String version;
 
     {
@@ -48,19 +45,17 @@ public class RequestLine {
      * @return
      */
     private static String convertUrl(String url) {
-        if (RegExpUtils.isMatch(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*.*")) {
-            Pattern r = Pattern.compile("^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*");
-            // 现在创建 matcher 对象
-            Matcher matcher = r.matcher(url);
-            if (matcher.find()) {
-                String group = matcher.group();
-                String substring = url.substring(group.length());
-                return StringUtils.isEmpty(substring) ? "/" : substring;
-            } else {
-                throw new RuntimeException("URL无效");
-            }
+        String hostContainPort = NetUtils.getHostContainPort(url);
+        int length = hostContainPort.length();
+        if (url.startsWith("https://")) {
+            length = length + 8;
+        } else if (url.startsWith("http://")) {
+            length = length + 7;
+        }
+        if (url.length() == length) {//长度相同，返回/
+            return "/";
         } else {
-            throw new RuntimeException("URL无效");
+            return url.substring(length);
         }
     }
 

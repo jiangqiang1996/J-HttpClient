@@ -54,11 +54,17 @@ public class RequestEntity {
     public String builderToString() {
         String requestStr;
         String bodyStr = null;
+        String contentType = requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE);
         if (requestBody != null) {
-            bodyStr = requestBody.builder(requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE));
+            bodyStr = requestBody.builder(contentType);
             addHeader(HttpRequestHeaderType.CONTENT_LENGTH, String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length));
         } else {
             addHeader(HttpRequestHeaderType.CONTENT_LENGTH, "0");
+        }
+        if (getVersion().equals(HttpHeaderValue.VERSION)) {//HTTP1.1 默认
+            addHeader(HttpRequestHeaderType.CONNECTION, HttpHeaderValue.KEEP_ALIVE);
+        } else {
+            addHeader(HttpRequestHeaderType.CONNECTION, HttpHeaderValue.CLOSE);
         }
         requestStr = requestLine.builder() + requestHeader.builder();
         if (StringUtils.isNotEmpty(bodyStr)) {
@@ -114,6 +120,10 @@ public class RequestEntity {
     public RequestEntity setVersion(String version) {
         requestLine.setVersion(version);
         return this;
+    }
+
+    public String getVersion() {
+        return requestLine.getVersion();
     }
 
     public RequestEntity addHeader(String name, String value) {

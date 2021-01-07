@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class NetUtils {
     @SneakyThrows
     public static List<String> getIpsByName(String url) {
-        url = getHost(url);
+        url = getHost(url);//去除端口号
         if (url.contains("://")) {
             url = url.substring((url.indexOf("://") + 3));
         }
@@ -37,7 +37,7 @@ public class NetUtils {
     }
 
     /**
-     * 获取域名部分
+     * 获取域名部分，不包括端口号
      *
      * @param url
      * @return
@@ -58,4 +58,24 @@ public class NetUtils {
         throw new RuntimeException("URL无效");
     }
 
+    /**
+     * 获取域名，包括端口号部分
+     * @param url
+     * @return
+     */
+    public static String getHostContainPort(String url) {
+        if (RegExpUtils.isMatch(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*.*")) {
+            String group = RegExpUtils.findMatchString(url, "^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*((:)\\d{1,5})+");
+            if (StringUtils.isNotEmpty(group)) {
+                String host = null;
+                if (group.startsWith("https://")) {
+                    host = group.substring(8);
+                } else if (group.startsWith("http")) {
+                    host = group.substring(7);
+                }
+                return host;
+            }
+        }
+        throw new RuntimeException("URL无效");
+    }
 }
