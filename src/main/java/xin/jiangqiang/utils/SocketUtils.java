@@ -50,7 +50,6 @@ public class SocketUtils {
     public static void writeString(Socket socket, String data) {
         try {
             log.debug("请求报文：\n{}", data);
-            System.out.println(data);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
             bufferedWriter.write(data);

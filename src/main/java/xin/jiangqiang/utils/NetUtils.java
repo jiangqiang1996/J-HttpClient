@@ -60,6 +60,7 @@ public class NetUtils {
 
     /**
      * 获取域名，包括端口号部分
+     *
      * @param url
      * @return
      */
@@ -74,6 +75,8 @@ public class NetUtils {
                     host = group.substring(7);
                 }
                 return host;
+            } else {
+                return getHost(url);
             }
         }
         throw new RuntimeException("URL无效");
