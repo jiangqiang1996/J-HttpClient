@@ -25,7 +25,7 @@ public class RequestBodyDefault implements RequestBody {
 
     public String builder(String contentType) {
         if (StringUtils.isEmpty(contentType) || HttpHeaderValue.CONTENTTYPE_X_WWW_FORM_URLENCODED.equals(contentType)) {//没有contentType或表单提交
-            StringBuilder stringBuilder = HttpUtils.mapToHttpStringBuilder(map);
+            StringBuilder stringBuilder = HttpUtils.mapToParamUrlEncode(map);
             return stringBuilder.toString();
         } else if (contentType.equals(HttpHeaderValue.CONTENTTYPE_JSON)) {//json提交
             return JSON.toJSONString(map) + CommonConstants.CRLF;

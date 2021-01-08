@@ -21,7 +21,7 @@ public class RequestFormBody implements RequestBody {
 
     @Override
     public String builder(String contentType) {
-        StringBuilder stringBuilder = HttpUtils.mapToHttpStringBuilder(map);
+        StringBuilder stringBuilder = HttpUtils.mapToParamUrlEncode(map);
         return stringBuilder.toString();
     }
 
