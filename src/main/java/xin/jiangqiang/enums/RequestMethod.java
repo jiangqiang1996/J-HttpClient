@@ -8,12 +8,16 @@ import lombok.Getter;
  */
 @Getter
 public enum RequestMethod {
-    GET("GET"), POST("POST"), HEAD("HEAD"), OPTIONS("OPTIONS"), PUT("PUT"),
-    DELETE("DELETE"), TRACE("TRACE"), CONNECT("CONNECT");
+    GET("GET", false), POST("POST", true),
+    HEAD("HEAD", false), OPTIONS("OPTIONS", false),
+    PUT("PUT", true), DELETE("DELETE", false),
+    TRACE("TRACE", false), CONNECT("CONNECT", false);
 
     private String name;
+    private Boolean hasBody;//是否有body
 
-    RequestMethod(String name) {
+    RequestMethod(String name, Boolean hasBody) {
         this.name = name;
+        this.hasBody = hasBody;
     }
 }

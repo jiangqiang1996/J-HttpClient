@@ -11,6 +11,7 @@ import xin.jiangqiang.entity.request.body.impl.RequestFormDataBody;
 import xin.jiangqiang.entity.request.body.impl.RequestJSONBody;
 import xin.jiangqiang.enums.HttpStructure;
 import xin.jiangqiang.enums.RequestMethod;
+import xin.jiangqiang.utils.RegExpUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -55,9 +56,10 @@ public class RequestEntity {
         String requestStr;
         String bodyStr = null;
         String contentType = requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE);
+        Boolean hasBody = requestLine.getMethod().getHasBody();
         if (requestBody != null) {
             bodyStr = requestBody.builder(contentType);
-            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length));
+            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length) : "0");
         } else {
             addHeader(HttpRequestHeaderType.CONTENT_LENGTH, "0");
         }
@@ -66,10 +68,24 @@ public class RequestEntity {
         } else {
             addHeader(HttpRequestHeaderType.CONNECTION, HttpHeaderValue.CLOSE);
         }
+        String oldUrl = requestLine.getUrl();
+        if (!hasBody) {//如果没有body,则参数拼接在URL上
+            String newUrl = oldUrl;
+            //协议,域名部分,端口号,斜杠或者斜杠加任意字符,问号,键值对
+            if (RegExpUtils.isMatch(newUrl, "^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*((:)\\d{1,5})+(/|/[^/?]*)?(\\?)[^?=]*(=)[^?=]*")) {
+                newUrl += ("&" + bodyStr);
+            } else {
+                newUrl = newUrl + "?" + bodyStr;
+            }
+            requestLine.setUrl(newUrl);
+        }
         requestStr = requestLine.builder() + requestHeader.builder();
         if (StringUtils.isNotEmpty(bodyStr)) {
-            requestStr += bodyStr;
+            if (hasBody) {
+                requestStr += bodyStr;
+            }
         }
+        requestLine.setUrl(oldUrl);
         return requestStr;
     }
 
@@ -88,15 +104,35 @@ public class RequestEntity {
             httpStructures1.add(HttpStructure.BODY);
         }
         StringBuilder stringBuilder = new StringBuilder();
+        Boolean hasBody = requestLine.getMethod().getHasBody();
+        String oldUrl = requestLine.getUrl();
+        String bodyStr = "";
+        if (requestBody != null) {
+            bodyStr = requestBody.builder(requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE));
+        }
+        addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length) : "0");
         if (httpStructures1.contains(HttpStructure.LINE)) {
-            stringBuilder.append(requestLine.builder());
+            if (hasBody) {
+                stringBuilder.append(requestLine.builder());
+            } else {//如果没有body,则参数拼接在URL上
+                String newUrl = oldUrl;
+                //协议,域名部分,端口号,斜杠或者斜杠加任意字符,问号,键值对
+                if (RegExpUtils.isMatch(newUrl, "^(http|https)(://)([a-zA-Z0-9]*\\.)*[a-zA-Z0-9]*((:)\\d{1,5})+(/|/[^/?]*)?(\\?)[^?=]*(=)[^?=]*")) {
+                    newUrl = newUrl + "&" + bodyStr;
+                } else {
+                    newUrl = newUrl + "?" + bodyStr;
+                }
+                requestLine.setUrl(newUrl);
+                stringBuilder.append(requestLine.builder());
+                requestLine.setUrl(oldUrl);
+            }
         }
         if (httpStructures1.contains(HttpStructure.HEAD)) {
             stringBuilder.append(requestHeader.builder());
         }
         if (httpStructures1.contains(HttpStructure.BODY)) {
-            if (requestBody != null) {
-                stringBuilder.append(requestBody.builder(requestHeader.getHeader(HttpRequestHeaderType.CONTENT_TYPE)));
+            if (requestBody != null && hasBody) {
+                stringBuilder.append(bodyStr);
             }
         }
         return stringBuilder.toString();
