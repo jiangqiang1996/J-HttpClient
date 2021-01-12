@@ -1,6 +1,7 @@
 package xin.jiangqiang.entity.request.body.impl;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import xin.jiangqiang.constants.CommonConstants;
 import xin.jiangqiang.constants.HttpHeaderValue;
@@ -21,10 +22,10 @@ import java.util.*;
 @Getter
 public class RequestFormDataBody implements RequestBody {
     private final Map<String, Object> params = new HashMap<>();//Object可以是字符串,可以是File类型,可以是List<File>类型
-    private String UUID = "852863227123856829090538";//todo  需要优化为随机生成
+    private final String id = UUID.randomUUID().toString().replaceAll("-", "");
 
-    public String builder(String contentType) {//todo
-        String separator ="----------------------------" + UUID ;//每一个参数结束的分隔符
+    public String builder(String contentType) {
+        String separator = "----------------------------" + id;//每一个参数结束的分隔符
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String name = entry.getKey();
@@ -55,7 +56,6 @@ public class RequestFormDataBody implements RequestBody {
             }
         }
         stringBuilder.append(separator).append("--").append(CommonConstants.CRLF);
-        System.out.println(stringBuilder);
         return stringBuilder.toString();
     }
 

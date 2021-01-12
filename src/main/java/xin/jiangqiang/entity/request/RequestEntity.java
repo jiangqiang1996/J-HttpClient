@@ -33,13 +33,13 @@ public class RequestEntity {
      * @param requestBody 请求体
      */
     public RequestEntity(RequestBody requestBody) {
-
         if (requestBody instanceof RequestFormBody) {
             addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_X_WWW_FORM_URLENCODED);
         } else if (requestBody instanceof RequestJSONBody) {
             addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_JSON);
         } else if (requestBody instanceof RequestFormDataBody) {
-            addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_FORM_DATA);
+            String id = ((RequestFormDataBody) requestBody).getId();
+            addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_FORM_DATA + ";  boundary=--------------------------" + id);
         } else {
             addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_X_WWW_FORM_URLENCODED);//默认就表单类型
         }
