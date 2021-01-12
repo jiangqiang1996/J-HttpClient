@@ -14,6 +14,8 @@ import xin.jiangqiang.interceptor.AbstractInterceptor;
 import xin.jiangqiang.net.Sender;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jiangqiang
@@ -27,28 +29,28 @@ public class TestUpload {
         RequestFormDataBody requestBody = new RequestFormDataBody();
 
         requestBody.addParam("name", "随心");
-        requestBody.addParam("head_img", new File("D:\\Documents\\file/dasd.txt"));
+        requestBody.addParam("single_file", new File("D:\\Documents\\file/dasd.txt"));
+        List<File> files = new ArrayList<>();
+        files.add(new File("D:\\Documents\\file/asd.txt"));
+        files.add(new File("D:\\Documents\\file/dasd.txt"));
+        requestBody.addParam("batch_files", files);
 
         RequestEntity requestEntity = new RequestEntity(requestBody);
-        requestEntity.addHeader(HttpRequestHeaderType.CONTENT_TYPE, HttpHeaderValue.CONTENTTYPE_FORM_DATA + "; boundary=--------------------------852863227123856829090538");
         requestEntity.setMethod(RequestMethod.POST);
         sender.setInterceptor(new AbstractInterceptor() {
             @Override
             public void beforeRequest(RequestEntity requestEntity) {
                 super.beforeRequest(requestEntity);
-                log.info("2");
-//                log.info("请求报文：\n{}", requestEntity.formatToString(HttpStructure.LINE, HttpStructure.HEAD, HttpStructure.BODY));
+                log.info("请求报文：\n{}", requestEntity.formatToString(HttpStructure.LINE, HttpStructure.HEAD, HttpStructure.BODY));
             }
 
             @Override
             public void afterRequest(ResponseEntity responseEntity) {
                 super.afterRequest(responseEntity);
-                log.info("3");
-//                log.info("响应报文：\n{}", responseEntity.formatToString(HttpStructure.LINE, HttpStructure.HEAD));
+                log.info("响应报文：\n{}", responseEntity.formatToString(HttpStructure.LINE, HttpStructure.HEAD));
             }
         });
         sender.setRequestEntity(requestEntity);
         ResponseEntity responseEntity = sender.send(url);
-        log.info("\r\n" + responseEntity.formatToString(HttpStructure.LINE, HttpStructure.HEAD, HttpStructure.BODY));
     }
 }
