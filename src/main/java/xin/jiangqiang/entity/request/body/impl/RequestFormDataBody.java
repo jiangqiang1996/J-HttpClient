@@ -40,19 +40,23 @@ public class RequestFormDataBody implements RequestBody {
                 fileToString(stringBuilder, (File) value);
             } else if (value instanceof List<?>) {//列表
                 List<?> list = (List<?>) value;
-                for (int i = 0; i < list.size(); i++) {
-                    Object next = list.get(i);
-                    if (i != 0) {
-                        stringBuilder.append(separator).append(CommonConstants.CRLF);
-                        stringBuilder.append("Content-Disposition").append(CommonConstants.COLON).append(CommonConstants.BLANKSPACE).append("form-data;")
-                                .append(CommonConstants.BLANKSPACE).append("name=\"").append(name).append("\"");
+                if (list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        Object next = list.get(i);
+                        if (i != 0) {
+                            stringBuilder.append(separator).append(CommonConstants.CRLF);
+                            stringBuilder.append("Content-Disposition").append(CommonConstants.COLON).append(CommonConstants.BLANKSPACE).append("form-data;")
+                                    .append(CommonConstants.BLANKSPACE).append("name=\"").append(name).append("\"");
+                        }
+                        if (next instanceof File) {//如果是文件
+                            File file = (File) next;//todo 暂时只支持文本类型，之后会支持其他类型
+                            fileToString(stringBuilder, file);
+                        } else {//不是文件
+                            throw new RuntimeException("不支持的类型");
+                        }
                     }
-                    if (next instanceof File) {//如果是文件
-                        File file = (File) next;//todo 暂时只支持文本类型，之后会支持其他类型
-                        fileToString(stringBuilder, file);
-                    } else {//不是文件
-                        throw new RuntimeException("不支持的类型");
-                    }
+                } else {
+                    stringBuilder.append(CommonConstants.CRLF).append(CommonConstants.CRLF).append(CommonConstants.CRLF);
                 }
             } else {//todo 或许可以直接传递字节数组
                 throw new RuntimeException("不支持的类型");
