@@ -33,6 +33,8 @@ public class TestUpload {
         List<File> files = new ArrayList<>();
         files.add(new File("D:\\Documents\\file/asd.txt"));
         files.add(new File("D:\\Documents\\file/dasd.txt"));
+        files.add(new File("D:\\Documents\\file/111"));
+        files.add(new File("D:\\Documents\\file/aaa"));
         requestBody.addParam("batch_files", files);
 
         RequestEntity requestEntity = new RequestEntity(requestBody);

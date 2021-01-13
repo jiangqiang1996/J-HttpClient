@@ -3,6 +3,7 @@ package xin.jiangqiang.utils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import xin.jiangqiang.constants.MimeType;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -77,5 +78,22 @@ public class NetUtils {
             }
         }
         throw new RuntimeException("URL无效");
+    }
+
+    public static String getMimeType(String str) {
+        String mimeType;
+        String suffixName = "";
+        if (str.contains(".")) {
+            suffixName = str.substring(str.lastIndexOf(".") + 1);
+        }
+        switch (suffixName) {
+            case "txt":
+                mimeType = MimeType.TEXT;
+                break;
+            case "":
+            default:
+                mimeType = MimeType.OCTET_STREAM;
+        }
+        return mimeType;
     }
 }
