@@ -1,6 +1,7 @@
 package xin.jiangqiang.entity.request;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.constants.HttpRequestHeaderType;
@@ -11,6 +12,7 @@ import xin.jiangqiang.entity.request.body.impl.RequestFormDataBody;
 import xin.jiangqiang.entity.request.body.impl.RequestJSONBody;
 import xin.jiangqiang.enums.HttpStructure;
 import xin.jiangqiang.enums.RequestMethod;
+import xin.jiangqiang.utils.CommonUtils;
 import xin.jiangqiang.utils.RegExpUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -59,7 +61,7 @@ public class RequestEntity {
         Boolean hasBody = requestLine.getMethod().getHasBody();
         if (requestBody != null) {
             bodyStr = requestBody.builder(contentType);
-            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length) : "0");
+            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.ISO_8859_1).length) : "0");
         } else {
             addHeader(HttpRequestHeaderType.CONTENT_LENGTH, "0");
         }
@@ -86,7 +88,11 @@ public class RequestEntity {
             }
         }
         requestLine.setUrl(oldUrl);
-        return requestStr;
+        if (contentType.startsWith(HttpHeaderValue.CONTENTTYPE_FORM_DATA)) {//对文件提交单独编码
+            return requestStr;
+        } else {
+            return CommonUtils.charsetConvert(requestStr);
+        }
     }
 
     /**
@@ -136,10 +142,6 @@ public class RequestEntity {
             }
         }
         return stringBuilder.toString();
-    }
-
-    public byte[] builderToByte() {
-        return builderToString().getBytes(StandardCharsets.ISO_8859_1);
     }
 
     public RequestEntity setUrl(String url) {

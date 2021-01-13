@@ -4,7 +4,6 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.constants.CommonConstants;
 import xin.jiangqiang.constants.HttpRequestHeaderType;
-import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.entity.common.Cookie;
 import xin.jiangqiang.utils.HttpUtils;
 import xin.jiangqiang.utils.NetUtils;

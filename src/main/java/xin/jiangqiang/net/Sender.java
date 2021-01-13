@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import xin.jiangqiang.callback.CallBack;
 import xin.jiangqiang.entity.request.RequestEntity;
-import xin.jiangqiang.entity.response.ResponseBody;
 import xin.jiangqiang.entity.response.ResponseEntity;
-import xin.jiangqiang.entity.response.ResponseHeader;
-import xin.jiangqiang.entity.response.ResponseLine;
 import xin.jiangqiang.interceptor.Interceptor;
 import xin.jiangqiang.utils.NetUtils;
 import xin.jiangqiang.utils.RegExpUtils;
@@ -18,7 +15,6 @@ import xin.jiangqiang.utils.SocketUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**

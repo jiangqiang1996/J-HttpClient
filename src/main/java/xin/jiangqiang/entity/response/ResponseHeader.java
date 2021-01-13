@@ -1,6 +1,5 @@
 package xin.jiangqiang.entity.response;
 
-import lombok.Getter;
 import lombok.ToString;
 import xin.jiangqiang.constants.CommonConstants;
 import xin.jiangqiang.entity.common.Cookie;

@@ -3,7 +3,6 @@ package xin.jiangqiang.entity.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import xin.jiangqiang.constants.HttpRequestHeaderType;
 import xin.jiangqiang.entity.common.Cookie;
 import xin.jiangqiang.enums.HttpStructure;
 

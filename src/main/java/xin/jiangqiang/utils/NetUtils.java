@@ -3,13 +3,10 @@ package xin.jiangqiang.utils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import xin.jiangqiang.constants.HttpRequestHeaderType;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author jiangqiang

@@ -1,15 +1,14 @@
 package xin.jiangqiang.entity.request.body.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import xin.jiangqiang.constants.CommonConstants;
-import xin.jiangqiang.constants.HttpHeaderValue;
 import xin.jiangqiang.entity.request.body.RequestBody;
+import xin.jiangqiang.utils.CommonUtils;
 import xin.jiangqiang.utils.FileUtils;
-import xin.jiangqiang.utils.HttpUtils;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -35,7 +34,7 @@ public class RequestFormDataBody implements RequestBody {
                     .append(CommonConstants.BLANKSPACE).append("name=\"").append(name).append("\"");
             if (value instanceof String) {
                 String val = (String) value;
-                stringBuilder.append(CommonConstants.CRLF).append(CommonConstants.CRLF).append(val).append(CommonConstants.CRLF);
+                stringBuilder.append(CommonConstants.CRLF).append(CommonConstants.CRLF).append(CommonUtils.charsetConvert(val)).append(CommonConstants.CRLF);
             } else if (value instanceof File) {//单个文件
                 fileToString(stringBuilder, (File) value);
             } else if (value instanceof List<?>) {//列表
@@ -58,7 +57,7 @@ public class RequestFormDataBody implements RequestBody {
                 } else {
                     stringBuilder.append(CommonConstants.CRLF).append(CommonConstants.CRLF).append(CommonConstants.CRLF);
                 }
-            } else {//todo 或许可以直接传递字节数组
+            } else {
                 throw new RuntimeException("不支持的类型");
             }
         }
@@ -75,7 +74,7 @@ public class RequestFormDataBody implements RequestBody {
         stringBuilder.append(";").append(CommonConstants.BLANKSPACE).append("filename=\"").append(file.getName()).append("\"");
         stringBuilder.append(CommonConstants.CRLF);
         stringBuilder.append("Content-Type: text/plain").append(CommonConstants.CRLF).append(CommonConstants.CRLF);
-        stringBuilder.append(new String(FileUtils.fileConvertToByteArray(file))).append(CommonConstants.CRLF);
+        stringBuilder.append(new String(FileUtils.fileConvertToByteArray(file), StandardCharsets.ISO_8859_1)).append(CommonConstants.CRLF);
         return stringBuilder;
     }
 

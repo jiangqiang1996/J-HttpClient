@@ -29,7 +29,7 @@ public class TestUpload {
         RequestFormDataBody requestBody = new RequestFormDataBody();
 
         requestBody.addParam("name", "随心");
-        requestBody.addParam("single_file", new File("D:\\Documents\\file/dasd.txt"));
+        requestBody.addParam("single_file", new File("D:\\Documents\\file/456.png"));
         List<File> files = new ArrayList<>();
         files.add(new File("D:\\Documents\\file/asd.txt"));
         files.add(new File("D:\\Documents\\file/dasd.txt"));
