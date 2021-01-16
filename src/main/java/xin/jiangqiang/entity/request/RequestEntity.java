@@ -61,7 +61,11 @@ public class RequestEntity {
         Boolean hasBody = requestLine.getMethod().getHasBody();
         if (requestBody != null) {
             bodyStr = requestBody.builder(contentType);
-            addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.ISO_8859_1).length) : "0");
+            if (contentType.equals(HttpHeaderValue.CONTENTTYPE_JSON)) {
+                addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.UTF_8).length) : "0");
+            } else {
+                addHeader(HttpRequestHeaderType.CONTENT_LENGTH, hasBody ? String.valueOf(bodyStr.getBytes(StandardCharsets.ISO_8859_1).length) : "0");
+            }
         } else {
             addHeader(HttpRequestHeaderType.CONTENT_LENGTH, "0");
         }
