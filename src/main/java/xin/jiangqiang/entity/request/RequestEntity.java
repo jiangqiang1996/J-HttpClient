@@ -137,6 +137,11 @@ public class RequestEntity {
                 requestLine.setUrl(oldUrl);
             }
         }
+        if (getVersion().equals(HttpHeaderValue.VERSION)) {//HTTP1.1 默认
+            addHeader(HttpRequestHeaderType.CONNECTION, HttpHeaderValue.KEEP_ALIVE);
+        } else {
+            addHeader(HttpRequestHeaderType.CONNECTION, HttpHeaderValue.CLOSE);
+        }
         if (httpStructures1.contains(HttpStructure.HEAD)) {
             stringBuilder.append(requestHeader.builder());
         }
