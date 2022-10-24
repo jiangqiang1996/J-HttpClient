@@ -48,7 +48,7 @@
         </encoder>
     </appender>
 
-    <logger name="xin.jiangqiang" level="INFO" additivity="false">
+    <logger name="top.jiangqiang.httpclient" level="INFO" additivity="false">
         <appender-ref ref="console"/>
         <!--        <appender-ref ref="file"/>-->
     </logger>
